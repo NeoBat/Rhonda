@@ -1,25 +1,4 @@
 #include "imageviewer.h"
-
-
-#include <QApplication>
-#include <QClipboard>
-#include <QColorSpace>
-#include <QDir>
-#include <QFileDialog>
-#include <QImageReader>
-#include <QImageWriter>
-#include <QLabel>
-#include <QMenuBar>
-#include <QMessageBox>
-#include <QMimeData>
-#include <QPainter>
-#include <QScreen>
-#include <QScrollArea>
-#include <QScrollBar>
-#include <QStandardPaths>
-#include <QStatusBar>
-#include <QGraphicsProxyWidget>
-
  
 ImageViewer::ImageViewer(QWidget *parent)
     : QGraphicsView(parent)
@@ -50,11 +29,12 @@ ImageViewer::ImageViewer(QWidget *parent)
     timer->setSingleShot(true);
     // Подключаем СЛОТ для отрисовки к таймеру
     connect(timer, SIGNAL(timeout()), this, SLOT(slotAlarmTimer()));
+
     timer->start(50);                   // Стартуем таймер на 50 миллисекунд
 
     scrollArea->setBackgroundRole(QPalette::Dark);
     scrollArea->setWidget(this);
-    resize(QGuiApplication::primaryScreen()->availableSize() * 3 / 5);
+    //resize(QGuiApplication::primaryScreen()->availableSize() * 3 / 5);
 
 }
  
@@ -73,11 +53,11 @@ void ImageViewer::zoomOut()
     scaleImage(0.8);
 }
 
-//void ImageViewer::normalSize()
-//{
-//    scene->adjustSize();
-//    scaleFactor = 1.0;
-//}
+void ImageViewer::normalSize()
+{
+    imageLabel->adjustSize();
+    scaleFactor = 1.0;
+}
 
 void ImageViewer::scaleImage(double factor)
 //! [23] //! [24]
@@ -113,12 +93,12 @@ void ImageViewer::open()
     item->setFlag(QGraphicsItem::ItemIsSelectable, true);
     item->setFlag(QGraphicsItem::ItemIsMovable, true);
 
-    QGraphicsProxyWidget *pMyProxy = new QGraphicsProxyWidget(item);
+    pMyProxy = new QGraphicsProxyWidget(item);
     imageLabel->setPixmap(QPixmap::fromImage(*newImage));
     imageLabel->adjustSize();
     pMyProxy->setWidget(imageLabel);
     pMyProxy->setPos(item->boundingRect().center()-imageLabel->rect().center());
-    //this->scene->setSceneRect(0,0, this->width() - 20, this->height() - 20);;
+
     scrollArea->setWidgetResizable(true);
 
     timer->start(50);
@@ -213,13 +193,15 @@ void ImageViewer::turn()
     p.drawPixmap(0, 0, (QPixmap::fromImage(*newImage)));
     p.end();
     *newImage = rotatePixmap.toImage();
-
-    QGraphicsProxyWidget *pMyProxy = new QGraphicsProxyWidget(item);
     imageLabel->setPixmap(QPixmap::fromImage(*newImage));
+
     //imageLabel->adjustSize();
-    pMyProxy->setWidget(imageLabel);
-    pMyProxy->setPos(item->boundingRect().center()-imageLabel->rect().center());
-    this->scene->setSceneRect(0,0, imageLabel->width(), imageLabel->height());;
+
+    //this->scene->setSceneRect(0,0, imageLabel->width(), imageLabel->height());;
+    item->boundingRect().setWidth(newImage->height());
+    item->boundingRect().setHeight(newImage->width());
+    scene->setSceneRect(item->boundingRect());
+    this->setSceneRect(scene->itemsBoundingRect());
     scrollArea->setWidgetResizable(true);
 
     timer->start(50);
@@ -262,3 +244,22 @@ void ImageViewer::deleteItemsFromGroup(QGraphicsItemGroup *group)
     }
 }
 
+void ImageViewer::mousePressEvent(QMouseEvent  *event)
+{
+   // Сохраняем координаты точки нажатия
+   firstPoint = event->pos();
+   if (!rubberBand)
+            rubberBand = new QRubberBand(QRubberBand::Rectangle, this);
+    rubberBand->setGeometry(QRectF(firstPoint, QSize()).toRect());
+    rubberBand->show();
+}
+
+void ImageViewer::mouseMoveEvent(QMouseEvent  *event)
+{
+    rubberBand->setGeometry(QRectF(firstPoint, event->pos()).toRect().normalized());
+}
+
+void ImageViewer::mouseReleaseEvent(QMouseEvent  *event)
+{
+    rubberBand->hide();
+}
