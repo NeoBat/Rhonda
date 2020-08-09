@@ -9,6 +9,33 @@
 #include <QLabel>
 #include <QImage>
 #include <QPainter>
+#include <QGraphicsSceneMouseEvent>
+#include <QDebug>
+#include <QMainWindow>
+#include <QResizeEvent>
+#include <QMenu>
+#include <QAction>
+#include <QRubberBand>
+#include <QRect>
+//#include <QSize>
+#include <QMouseEvent>
+#include <QPoint>
+#include <QApplication>
+#include <QClipboard>
+#include <QColorSpace>
+#include <QDir>
+#include <QFileDialog>
+#include <QImageReader>
+#include <QImageWriter>
+#include <QMenuBar>
+#include <QMessageBox>
+#include <QMimeData>
+#include <QScreen>
+#include <QScrollArea>
+#include <QScrollBar>
+#include <QStandardPaths>
+#include <QStatusBar>
+#include <QGraphicsProxyWidget>
  
 QT_BEGIN_NAMESPACE
 class QAction;
@@ -44,7 +71,7 @@ private slots:
     void copy();
     void turn();
     //void paste();
-    //void normalSize();
+    void normalSize();
     //void fitToWindow();
 
 private:
@@ -70,6 +97,10 @@ private:
     QTimer              *timer;
     double              scaleFactor = 1;
     QImage              *newImage;
+    QGraphicsProxyWidget *pMyProxy;
+    QPointF             firstPoint;      // Координаты первой точки
+    QPointF             secondPoint;      // Координаты второй точки
+    QRubberBand         *rubberBand;
 
 private:
     /* Перегружаем событие изменения размера окна,
@@ -80,6 +111,11 @@ private:
      * из группы элементов
      * */
     void deleteItemsFromGroup(QGraphicsItemGroup *group_1);
+
+protected:
+    void mousePressEvent(QMouseEvent  *event);
+    void mouseReleaseEvent(QMouseEvent  *event);
+    void mouseMoveEvent(QMouseEvent  *event);
 };
  
 #endif // IMAGEVIEWER_H
