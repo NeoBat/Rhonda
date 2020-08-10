@@ -14,8 +14,6 @@ ImageViewer::ImageViewer(QWidget *parent)
 
  
     /* Немного поднастроим отображение виджета и его содержимого */
-    //this->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOn); // Отключим скроллбар по горизонтали
-    //this->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);   // Отключим скроллбар по вертикали
     this->setAlignment(Qt::AlignCenter);                        // Делаем привязку содержимого к центру
     this->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);    // Растягиваем содержимое по виджету
 
@@ -34,11 +32,10 @@ ImageViewer::ImageViewer(QWidget *parent)
 
     scrollArea->setBackgroundRole(QPalette::Dark);
     scrollArea->setWidget(this);
-    //resize(QGuiApplication::primaryScreen()->availableSize() * 3 / 5);
 
 }
  
-ImageViewer::~ImageViewer()//деструктор
+ImageViewer::~ImageViewer()
 {
 
 }
@@ -60,7 +57,6 @@ void ImageViewer::normalSize()
 }
 
 void ImageViewer::scaleImage(double factor)
-//! [23] //! [24]
 {
     scaleFactor *= factor;
     imageLabel->resize(scaleFactor * imageLabel->pixmap(Qt::ReturnByValue).size());
@@ -70,13 +66,9 @@ void ImageViewer::scaleImage(double factor)
     this->item->update();
     this->scene->update();
     this->update();
-    //ограничения
-//    mainwindow->zIn->setEnabled(scaleFactor < 3.0);
-//    mainwindow->zOut->setEnabled(scaleFactor > 0.333);
 }
 
 void ImageViewer::adjustScrollBar(QScrollBar *scrollBar, double factor)
-//! [25] //! [26]
 {
     scrollBar->setValue(int(factor * scrollBar->value()
                             + ((factor - 1) * scrollBar->pageStep()/2)));
@@ -102,23 +94,6 @@ void ImageViewer::open()
     scrollArea->setWidgetResizable(true);
 
     timer->start(50);
-
-
-
-//    QString imagePath = QFileDialog::getOpenFileName(
-//                    this,
-//                    tr("Open File"),
-//                    DIR,
-//                    tr("JPEG (*.jpg *.jpeg);;PNG (*.png)" )
-//                    );
-//      QImage * imageObject = new QImage();
-//        imageObject->load(imagePath);
-//      QPixmap  image = QPixmap::fromImage(*imageObject);
-//      QGraphicsScene *  nscene = new QGraphicsScene(this);
-//        nscene->addPixmap(image);
-//        nscene->setSceneRect(image.rect());
-//        this->setScene(nscene);
-
 }
 
 //void ImageViewer::setImage(const QImage &newImage)
@@ -127,7 +102,7 @@ void ImageViewer::open()
 //    if (newImage.colorSpace().isValid())
 //        newImage.convertToColorSpace(QColorSpace::SRgb);
 //    imageLabel->setPixmap(QPixmap::fromImage(newImage));
-////! [4]
+
 //    scaleFactor = 1.0;
 
 //    scrollArea->setVisible(true);
@@ -195,9 +170,6 @@ void ImageViewer::turn()
     *newImage = rotatePixmap.toImage();
     imageLabel->setPixmap(QPixmap::fromImage(*newImage));
 
-    //imageLabel->adjustSize();
-
-    //this->scene->setSceneRect(0,0, imageLabel->width(), imageLabel->height());;
     item->boundingRect().setWidth(newImage->height());
     item->boundingRect().setHeight(newImage->width());
     scene->setSceneRect(item->boundingRect());
@@ -205,11 +177,6 @@ void ImageViewer::turn()
     scrollArea->setWidgetResizable(true);
 
     timer->start(50);
-
-
-//    this->item->update();
-//    this->scene->update();
-//    this->update();
 }
 
 void ImageViewer::slotAlarmTimer()

@@ -33,7 +33,7 @@ MainWindow::~MainWindow()
 {
     delete ui;
 }
-
+// ограничения zoomIn и zoomOut
 void MainWindow::slotAlarmTimer()
 {
     ui->zoomIn->setEnabled(myPicture->getvaluescallfactor() < 3.0);

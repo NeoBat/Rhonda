@@ -52,7 +52,6 @@ class ImageViewer : public QGraphicsView
 public:
     explicit ImageViewer(QWidget *parent = 0);
     ~ImageViewer();
-    //вернуть обратно в приват 36 строка!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     double getvaluescallfactor();
 
 
@@ -77,7 +76,7 @@ private slots:
 private:
     void scaleImage(double factor);
     void adjustScrollBar(QScrollBar *scrollBar, double factor);
-    //void setImage(const QImage &newImage);
+    //void setImage(const QImage *newImage); //для метода paste
 
 
     QGraphicsItemGroup  *group_1;   // Объявляем первую группу элементов
